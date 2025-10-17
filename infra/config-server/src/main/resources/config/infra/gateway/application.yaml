@@ -4,21 +4,67 @@ server:
 spring:
   cloud:
     gateway:
-      discovery.locator.enabled: true
+      discovery:
+        locator:
+          enabled: true
       routes:
-        - id: ewm_service_route
-          uri: lb://ewm
+
+        - id: admin_category
+          uri: lb://event-service
           predicates:
-            - Path=/api/v1/ewm/**
-          filters:
-            - RewritePath=/api/v1/(?<segment>.*), /${segment}
+            - Path=/admin/categories/**
 
-  output:
-    ansi:
-      enabled: always
+        - id: public_category
+          uri: lb://event-service
+          predicates:
+            - Path=/categories/**
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: gateway,health,info
+        - id: admin_comment
+          uri: lb://comment-service
+          predicates:
+            - Path=/admin/comments/**
+
+        - id: private_comment
+          uri: lb://comment-service
+          predicates:
+            - Path=/users/{userId}/comments/**
+
+        - id: public_comment
+          uri: lb://comment-service
+          predicates:
+            - Path=/comments/**
+
+        - id: admin_compilation
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/compilations/**
+
+        - id: public_compilation
+          uri: lb://event-service
+          predicates:
+            - Path=/compilations/**
+
+        - id: admin_event
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/events/**
+
+        - id: private_event
+          uri: lb://event-service
+          predicates:
+            - Path=/users/{userId}/events/**
+
+        - id: public_event
+          uri: lb://event-service
+          predicates:
+            - Path=/events/**
+
+        - id: participation_request
+          uri: lb://request-service
+          predicates:
+            - Path=/users/{userId}/requests/**
+
+        - id: user
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/users/**
