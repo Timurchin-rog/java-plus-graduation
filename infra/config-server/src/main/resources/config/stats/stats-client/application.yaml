@@ -1,0 +1,3 @@
+discovery:
+  services:
+    stats-server-id: stats-server
