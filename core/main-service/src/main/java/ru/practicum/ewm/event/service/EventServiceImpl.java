@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.client.StatsClient;
+import ru.practicum.client.StatsOperations;
 import ru.practicum.dto.ViewDto;
 import ru.practicum.dto.NewHitDto;
 import ru.practicum.ewm.category.Category;
@@ -69,7 +69,7 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locationRepository;
     private final RequestRepository requestRepository;
     private final CommentRepository commentRepository;
-    private final StatsClient statsClient;
+    private final StatsOperations statsOperations;
     private final JPAQueryFactory queryFactory;
 
     private static String datePattern = "yyyy-MM-dd HH:mm:ss";
@@ -95,7 +95,7 @@ public class EventServiceImpl implements EventService {
                 .map(event -> "/events/" + event.getId())
                 .toList();
 
-        List<ViewDto> views = statsClient.getStats(
+        List<ViewDto> views = statsOperations.getViews(
                 "2020-05-05 00:00:00",
                 "2035-05-05 00:00:00",
                 uris,
@@ -127,7 +127,7 @@ public class EventServiceImpl implements EventService {
 
         String uri = "/events/" + param.getEventId();
 
-        List<ViewDto> views = statsClient.getStats(
+        List<ViewDto> views = statsOperations.getViews(
                 "2020-05-05 00:00:00",
                 "2035-05-05 00:00:00",
                 List.of(uri),
@@ -487,12 +487,12 @@ public class EventServiceImpl implements EventService {
                 .uri(request.getRequestURI())
                 .timestamp(LocalDateTime.now().format(formatter))
                 .build();
-        statsClient.registerHit(hitDto);
+        statsOperations.saveHit(hitDto);
     }
 
     private Integer countView(Long eventId, LocalDateTime start, LocalDateTime end) {
         List<String> uris = List.of("/events/" + eventId);
-        List<ViewDto> views = statsClient.getStats(start.format(formatter), end.format(formatter), uris, true);
+        List<ViewDto> views = statsOperations.getViews(start.format(formatter), end.format(formatter), uris, true);
         Optional<Integer> countViews = views.stream()
                 .filter(view -> view.getUri().contains(eventId.toString()))
                 .map(ViewDto::getHits)

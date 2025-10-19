@@ -1,3 +1,5 @@
-discovery:
-  services:
-    stats-server-id: stats-server
+stats:
+  server:
+    url: "http://stats-server:9090"
+server:
+  port: 9090
