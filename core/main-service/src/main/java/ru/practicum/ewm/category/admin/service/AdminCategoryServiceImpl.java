@@ -13,7 +13,6 @@ import ru.practicum.ewm.event.repository.EventRepository;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -55,14 +54,15 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
     }
 
     private Category getCategoryBiId(long id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Категория " + id + " не найдена"));
+        return repository.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("Категория %d не найдена", id))
+        );
     }
 
     private void isDuplicateName(String name) {
         if (repository.findByTitleLike(name).isPresent()) {
             log.debug("Название категории {} уже есть в базе", name);
-            throw new ConflictException("Название категории " + name + "уже есть в базе");
+            throw new ConflictException(String.format("Название категории %s уже есть в базе", name));
         }
     }
 }

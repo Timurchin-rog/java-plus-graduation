@@ -15,6 +15,7 @@ import ru.practicum.ewm.category.dto.NewCategoryRequest;
 @RequiredArgsConstructor
 public class AdminCategoryController {
     private final AdminCategoryService adminCategoryService;
+    private final String pathCategory = "/{catId}";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -23,14 +24,14 @@ public class AdminCategoryController {
         return adminCategoryService.createCategory(category);
     }
 
-    @DeleteMapping("/{catId}")
+    @DeleteMapping(pathCategory)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeCategory(@PathVariable long catId) {
         log.trace("Получаем запрос на удаление категории с id {}", catId);
         adminCategoryService.removeCategory(catId);
     }
 
-    @PatchMapping("/{catId}")
+    @PatchMapping(pathCategory)
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto patchCategory(@PathVariable long catId, @Valid @RequestBody NewCategoryRequest category) {
         log.trace("Получаем запрос на изменение категории с id {}. Новое имя {}", catId, category);
