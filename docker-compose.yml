@@ -23,32 +23,34 @@ services:
   #      - SPRING_DATASOURCE_USERNAME=ewm
   #      - SPRING_DATASOURCE_PASSWORD=ewm
 
-  stats-db:
+  postgres:
     image: postgres:17.5
-    container_name: stats-db
+    container_name: postgres
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=stats
-      - POSTGRES_USER=stats
-      - POSTGRES_DB=stats
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=stats_server
     healthcheck:
       test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
       timeout: 5s
       interval: 5s
       retries: 10
 
-  ewm-db:
+  db-init:
     image: postgres:17.5
-    container_name: ewm-db
-    ports:
-      - "6432:5432"
-    environment:
-      - POSTGRES_PASSWORD=ewm
-      - POSTGRES_USER=ewm
-      - POSTGRES_DB=ewm
-    healthcheck:
-      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
-      timeout: 5s
-      interval: 5s
-      retries: 10
+    container_name: db-init
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        psql postgresql://postgres:12345@postgres:5432 -v ON_ERROR_STOP=1 <<-EOSQL
+        create database core_event_service;
+        create database core_user_service;
+        create database core_request_service;
+        EOSQL

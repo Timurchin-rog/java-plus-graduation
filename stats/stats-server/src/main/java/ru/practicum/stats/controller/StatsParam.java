@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -13,8 +14,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @ToString
 public class StatsParam {
-    String start;
-    String end;
+    LocalDateTime start;
+    LocalDateTime end;
     List<String> uris;
     boolean unique;
 }
