@@ -24,8 +24,8 @@ public class OpenCategoryController {
         return openCategoryService.getCategories(from, size);
     }
 
-    @GetMapping("/{catId}")
-    public CategoryDto getCategory(@PathVariable long catId) {
+    @GetMapping("/{cat-id}")
+    public CategoryDto getCategory(@PathVariable(name = "cat-id") long catId) {
         log.trace("Возвращаем категорию с id {}", catId);
         return openCategoryService.getCategory(catId);
     }

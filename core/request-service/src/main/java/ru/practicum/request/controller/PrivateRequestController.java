@@ -63,7 +63,7 @@ public class PrivateRequestController {
         return requestService.createRequest(param);
     }
 
-    @PatchMapping("/{user-id}/requests/{request-id}/cancel")
+    @PatchMapping(requestsPath + "/{request-id}/cancel")
     public ParticipationRequestDto updateRequest(@PathVariable(name = "user-id") long userId,
                                                  @PathVariable(name = "request-id") long requestId) {
         PrivateRequestParam param = PrivateRequestParam.builder()

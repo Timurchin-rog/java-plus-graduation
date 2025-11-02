@@ -51,18 +51,18 @@ public class AdminEventController {
         return eventService.getEventById(eventId);
     }
 
-    @GetMapping("/{event-id}/users/{user-id}")
+    @GetMapping(eventPath + "/users/{user-id}")
     public EventFullDto getEventById(@PathVariable(name = "event-id") Long eventId,
                                      @PathVariable(name = "user-id") Long userId) {
         return eventService.getEventById(eventId);
     }
 
-    @PostMapping("/{event-id}/add-request")
+    @PostMapping(eventPath + "/add-request")
     public void addConfirmedRequest(@PathVariable(name = "event-id") Long eventId) {
         eventService.addConfirmedRequest(eventId);
     }
 
-    @PostMapping("/{event-id}/remove-request")
+    @PostMapping(eventPath + "/remove-request")
     public void removeConfirmedRequest(@PathVariable(name = "event-id") Long eventId) {
         eventService.addConfirmedRequest(eventId);
     }

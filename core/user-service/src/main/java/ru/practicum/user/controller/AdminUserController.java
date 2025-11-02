@@ -32,7 +32,7 @@ public class AdminUserController {
         return userService.getUsers(param);
     }
 
-    @GetMapping("/{user-id}/exist")
+    @GetMapping(userPath + "/exist")
     public void isExistUser(@PathVariable(name = "user-id") long userId) {
         userService.isExistUser(userId);
     }
@@ -42,7 +42,7 @@ public class AdminUserController {
         return userService.getUserById(userId);
     }
 
-    @GetMapping("/{user-id}/short")
+    @GetMapping(userPath + "/short")
     public UserShortDto getUserShortById(@PathVariable(name = "user-id") long userId) {
         return userService.getUserShortById(userId);
     }

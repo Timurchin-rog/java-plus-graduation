@@ -15,7 +15,7 @@ import ru.practicum.event.category.admin.service.AdminCategoryService;
 @RequiredArgsConstructor
 public class AdminCategoryController {
     private final AdminCategoryService adminCategoryService;
-    private final String pathCategory = "/{catId}";
+    private final String pathCategory = "/{cat-id}";
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -26,14 +26,15 @@ public class AdminCategoryController {
 
     @DeleteMapping(pathCategory)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeCategory(@PathVariable long catId) {
+    public void removeCategory(@PathVariable(name = "cat-id") long catId) {
         log.trace("Получаем запрос на удаление категории с id {}", catId);
         adminCategoryService.removeCategory(catId);
     }
 
     @PatchMapping(pathCategory)
     @ResponseStatus(HttpStatus.OK)
-    public CategoryDto patchCategory(@PathVariable long catId, @Valid @RequestBody NewCategoryRequest category) {
+    public CategoryDto patchCategory(@PathVariable(name = "cat-id") long catId,
+                                     @Valid @RequestBody NewCategoryRequest category) {
         log.trace("Получаем запрос на изменение категории с id {}. Новое имя {}", catId, category);
         return adminCategoryService.pathCategory(catId, category);
     }
