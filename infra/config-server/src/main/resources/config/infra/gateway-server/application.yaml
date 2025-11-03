@@ -4,12 +4,67 @@ spring:
       discovery:
         locator:
           enabled: true
+          lowerCaseServiceId: true
       routes:
-        - id: main_service_route
-          uri: lb://main-service
+        - id: admin_category
+          uri: lb://event-service
           predicates:
-            - Path=/**
+            - Path=/admin/categories/**
 
+        - id: public_category
+          uri: lb://event-service
+          predicates:
+            - Path=/categories/**
+
+        - id: admin_comment
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/events/*/comments/**
+
+        - id: private_comment
+          uri: lb://event-service
+          predicates:
+            - Path=/users/*/events/*/comments
+
+        - id: public_comment
+          uri: lb://event-service
+          predicates:
+            - Path=/events/*/comments
+
+        - id: admin_compilation
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/compilations/**
+
+        - id: public_compilation
+          uri: lb://event-service
+          predicates:
+            - Path=/compilations/**
+
+        - id: admin_event
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/events/**
+
+        - id: private_event
+          uri: lb://event-service
+          predicates:
+            - Path=/users/*/events/**
+
+        - id: public_event
+          uri: lb://event-service
+          predicates:
+            - Path=/events/**
+
+        - id: participation_request
+          uri: lb://request-service
+          predicates:
+            - Path=/users/*/requests/**, /users/requests/**, /users/*/requests/*/**
+
+        - id: user
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/users/**
 
 server:
   port: 8080

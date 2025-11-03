@@ -16,7 +16,6 @@ import ru.practicum.stats.model.View;
 import ru.practicum.stats.repository.HitRepository;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,7 +26,6 @@ import java.util.List;
 public class StatsServiceImpl implements StatsService {
 
     private final HitRepository hitRepository;
-    private String datePattern = "yyyy-MM-dd HH:mm:ss";
 
     @Override
     @Transactional
@@ -38,9 +36,8 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewDto> getViews(StatsParam param) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern);
-        LocalDateTime start = LocalDateTime.parse(param.getStart(), formatter);
-        LocalDateTime end = LocalDateTime.parse(param.getEnd(), formatter);
+        LocalDateTime start = param.getStart();
+        LocalDateTime end = param.getEnd();
 
         if (start.isAfter(end))
             throw new ValidationException("Дата начала не может быть позже даты конца диапазона");
