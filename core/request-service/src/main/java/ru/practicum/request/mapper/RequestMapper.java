@@ -1,6 +1,6 @@
 package ru.practicum.request.mapper;
 
-import ru.practicum.dto.request.ParticipationRequestDto;
+import ru.practicum.api.dto.request.ParticipationRequestDto;
 import ru.practicum.request.model.Request;
 
 import java.time.format.DateTimeFormatter;

@@ -2,33 +2,40 @@ package ru.practicum.request.service;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.request.ParticipationRequestDto;
-import ru.practicum.dto.user.UserShortDto;
-import ru.practicum.enums.EventState;
-import ru.practicum.enums.RequestState;
-import ru.practicum.exception.ConflictException;
-import ru.practicum.exception.NotFoundException;
-import ru.practicum.feign.EventClient;
-import ru.practicum.feign.UserClient;
+import ru.practicum.api.feign.EventOperations;
+import ru.practicum.client.CollectorClient;
+import ru.practicum.api.dto.event.EventDto;
+import ru.practicum.api.dto.request.ParticipationRequestDto;
+import ru.practicum.api.enums.EventState;
+import ru.practicum.api.enums.RequestState;
+import ru.practicum.ewm.stats.proto.ActionTypeProto;
+import ru.practicum.api.exception.ConflictException;
+import ru.practicum.api.exception.NotFoundException;
+import ru.practicum.api.feign.UserOperations;
 import ru.practicum.request.mapper.RequestMapper;
 import ru.practicum.request.model.QRequest;
 import ru.practicum.request.model.Request;
 import ru.practicum.request.param.PrivateRequestParam;
 import ru.practicum.request.repository.RequestRepository;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
-    private final EventClient eventClient;
-    private final UserClient userClient;
+    private final EventOperations eventClient;
+    private final UserOperations userOperations;
+    private final CollectorClient collectorClient;
 
     @Override
     public List<ParticipationRequestDto> getRequestOfCurrentUser(PrivateRequestParam param) {
@@ -75,13 +82,14 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     @Override
     public ParticipationRequestDto createRequest(PrivateRequestParam param) {
-        long userId = param.getUserId();
-        long eventId = param.getEventId();
-        EventFullDto event = eventClient.getEventById(eventId);
+        log.error("Началось создание заявки");
+        Long userId = param.getUserId();
+        Long eventId = param.getEventId();
+        EventDto event = eventClient.getEventApi(eventId);
 
         if (checkDuplicatedRequest(param))
             throw new ConflictException("Нельзя добавить повторный запрос");
-        if (event.getInitiatorId() == userId)
+        if (event.getInitiatorId().equals(userId))
             throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии");
         if (!event.getState().equalsIgnoreCase(EventState.PUBLISHED.toString()))
             throw new ConflictException("Нельзя учавствовать в неопубликованном событии");
@@ -97,6 +105,8 @@ public class RequestServiceImpl implements RequestService {
         } else {
             request.setState(RequestState.PENDING);
         }
+
+        collectorClient.collectUserAction(userId, eventId, ActionTypeProto.ACTION_REGISTER, Instant.now());
 
         Request newRequest = requestRepository.save(request);
         return RequestMapper.mapToRequestDto(newRequest);
@@ -122,16 +132,27 @@ public class RequestServiceImpl implements RequestService {
     @Transactional
     @Override
     public ParticipationRequestDto updateRequest(PrivateRequestParam param) {
-        userClient.isExistUser(param.getUserId());
+        userOperations.isExistsUser(param.getUserId());
         long requestId = param.getRequestId();
         Request oldRequest = checkRequest(requestId);
-        EventFullDto event = eventClient.getEventById(oldRequest.getEventId());
+        EventDto event = eventClient.getEventApi(oldRequest.getEventId());
 
         oldRequest.setState(RequestState.CANCELED);
         eventClient.removeConfirmedRequest(event.getId());
 
         Request updatedRequest = requestRepository.save(oldRequest);
         return RequestMapper.mapToRequestDto(updatedRequest);
+    }
+//проблема в методе репозитория
+    @Override
+    public Map<Long, Long> getConfirmedEventsRequestsCount(List<Long> eventsIds) {
+        log.warn("Началось получение мапы с eventId и количеством запросов");
+        return requestRepository
+                .getCountByEventIdInAndStatus(eventsIds, RequestState.CONFIRMED.toString()).stream()
+                .collect(Collectors.toMap(
+                        row -> ((Number) row[0]).longValue(),
+                        row -> ((Number) row[1]).longValue()
+                ));
     }
 
     private Request checkRequest(long requestId) {
