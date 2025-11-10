@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApiEventController implements EventOperations {
     private final EventService eventService;
+    private final String userHeader = "X-EWM-USER-ID";
 
     @Override
     public EventDto getEventApi(@PathVariable(name = "event-id") Long eventId) {
@@ -32,13 +33,13 @@ public class ApiEventController implements EventOperations {
     }
 
     @Override
-    public void likeEvent(@RequestHeader("X-EWM-USER-ID") Long userId, @PathVariable Long eventId) {
+    public void likeEvent(@RequestHeader(userHeader) Long userId, @PathVariable Long eventId) {
         log.info("Запрос на лайк для события с id: {} от пользователя с id: {}", eventId, userId);
         eventService.likeEvent(userId, eventId);
     }
 
     @Override
-    public List<EventDto> getRecommendations(@RequestHeader("X-EWM-USER-ID") Long userId) {
+    public List<EventDto> getRecommendations(@RequestHeader(userHeader) Long userId) {
         log.info("Запрос на получение рекомендаций для пользователя с id: {}", userId);
         return eventService.getRecommendations(userId);
     }

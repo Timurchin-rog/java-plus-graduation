@@ -94,7 +94,9 @@ public class EventServiceImpl implements EventService {
     @Override
     public void likeEvent(Long userId, Long eventId) {
         if (requestOperations.getRequestsOfUser(userId, eventId).isEmpty()) {
-            throw new ValidationException("Пользователь id: " + userId + " не посещал событие c id: " + eventId);
+            throw new ValidationException(
+                    String.format("Пользователь id = %d не посещал событие c id = %d ", userId, eventId)
+            );
         }
         collectorClient.collectUserAction(userId, eventId, ActionTypeProto.ACTION_LIKE, Instant.now());
     }
@@ -103,7 +105,7 @@ public class EventServiceImpl implements EventService {
     public EventDto getEventById(Long eventId) {
         return eventRepository.findById(eventId)
                 .map(this::addInfo)
-                .orElseThrow(() -> new NotFoundException("Событие с таким id не найдено"));
+                .orElseThrow(() -> new NotFoundException(String.format("Событие id = %d не найдено", eventId)));
     }
 
     @Override
@@ -359,7 +361,7 @@ public class EventServiceImpl implements EventService {
         final Event event = checkEvent(eventId);
 
         if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new NotFoundException("Event with id=" + eventId + " was not found");
+            throw new NotFoundException(String.format("Событие id = %d не является публичным", eventId));
         }
 
         return EventMapper.mapToEventDto(event);

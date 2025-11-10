@@ -29,8 +29,8 @@ public class PrivateEventController {
 
     @GetMapping(eventsPath)
     public List<EventDto> getEventsOfUser(@PathVariable(name = "user-id") long userId,
-                                              @RequestParam(defaultValue = "0") int from,
-                                              @RequestParam(defaultValue = "10") int size) {
+                                          @RequestParam(defaultValue = "0") int from,
+                                          @RequestParam(defaultValue = "10") int size) {
         PrivateEventParam param = PrivateEventParam.builder()
                 .userId(userId)
                 .from(from)
@@ -41,7 +41,7 @@ public class PrivateEventController {
 
     @GetMapping(eventPath)
     public EventDto getEventOfUser(@PathVariable(name = "user-id") long userId,
-                                       @PathVariable(name = "event-id") long eventId) {
+                                   @PathVariable(name = "event-id") long eventId) {
         PrivateEventParam param = PrivateEventParam.builder()
                 .userId(userId)
                 .eventId(eventId)
@@ -52,7 +52,7 @@ public class PrivateEventController {
     @PostMapping(eventsPath)
     @ResponseStatus(HttpStatus.CREATED)
     public EventDto createEvent(@Valid @RequestBody NewEventDto event,
-                                    @PathVariable(name = "user-id") long userId) {
+                                @PathVariable(name = "user-id") long userId) {
         log.debug("получаем запрос на создание события");
         PrivateEventParam param = PrivateEventParam.builder()
                 .newEvent(event)
@@ -63,8 +63,8 @@ public class PrivateEventController {
 
     @PatchMapping(eventPath)
     public EventDto updateEvent(@Valid @RequestBody UpdateEventUserRequest event,
-                                    @PathVariable(name = "user-id") long userId,
-                                    @PathVariable(name = "event-id") long eventId) {
+                                @PathVariable(name = "user-id") long userId,
+                                @PathVariable(name = "event-id") long eventId) {
         PrivateEventParam param = PrivateEventParam.builder()
                 .eventOnUpdate(event)
                 .userId(userId)
