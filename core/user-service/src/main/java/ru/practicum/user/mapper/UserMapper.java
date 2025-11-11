@@ -1,8 +1,8 @@
 package ru.practicum.user.mapper;
 
-import ru.practicum.dto.user.NewUserRequest;
-import ru.practicum.dto.user.UserDto;
-import ru.practicum.dto.user.UserShortDto;
+import ru.practicum.api.dto.user.NewUserRequest;
+import ru.practicum.api.dto.user.UserDto;
+import ru.practicum.api.dto.user.UserShortDto;
 import ru.practicum.user.model.User;
 
 import java.util.ArrayList;

@@ -4,16 +4,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
-import ru.practicum.enums.RequestState;
+import ru.practicum.api.dto.request.EventRequestStatusUpdateRequest;
+import ru.practicum.api.enums.RequestState;
 
 @Getter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PrivateRequestParam {
-    long userId;
-    long eventId;
-    long requestId;
+    Long userId;
+    Long eventId;
+    Long requestId;
     EventRequestStatusUpdateRequest request;
     RequestState requestState;
 }

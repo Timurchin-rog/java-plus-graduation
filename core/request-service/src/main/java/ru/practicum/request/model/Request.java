@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.enums.RequestState;
+import ru.practicum.api.enums.RequestState;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,9 @@ public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(name = "event_id")
     Long eventId;
+    @Column(name = "requester_id")
     Long requesterId;
     @Enumerated(EnumType.STRING)
     RequestState state;

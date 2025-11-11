@@ -7,11 +7,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.dto.user.NewUserRequest;
-import ru.practicum.dto.user.UserDto;
-import ru.practicum.dto.user.UserShortDto;
-import ru.practicum.exception.DuplicatedEmailException;
-import ru.practicum.exception.NotFoundException;
+import ru.practicum.api.dto.user.NewUserRequest;
+import ru.practicum.api.dto.user.UserDto;
+import ru.practicum.api.dto.user.UserShortDto;
+import ru.practicum.api.exception.DuplicatedEmailException;
+import ru.practicum.api.exception.NotFoundException;
 import ru.practicum.user.model.QUser;
 import ru.practicum.user.param.AdminUserParam;
 import ru.practicum.user.model.User;
@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public List<UserDto> getUsers(AdminUserParam param) {
+    public List<UserDto> getPageUsers(AdminUserParam param) {
         QUser user = QUser.user;
         List<BooleanExpression> conditions = new ArrayList<>();
 
@@ -49,6 +49,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> getUsers(List<Long> ids) {
+        return UserMapper.mapToUserDto(userRepository.findByIdIn(ids));
+    }
+
+    @Override
     public void isExistUser(long userId) {
         if (userRepository.findById(userId).isEmpty()) {
             throw new NotFoundException(String.format("Пользователь id = %d не найден", userId));
@@ -59,12 +64,6 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserById(long userId) {
         User user = checkUser(userId);
         return UserMapper.mapToUserDto(user);
-    }
-
-    @Override
-    public UserShortDto getUserShortById(long userId) {
-        User user = checkUser(userId);
-        return UserMapper.mapToUserShortDto(user);
     }
 
     @Transactional

@@ -6,65 +6,80 @@ spring:
           enabled: true
           lowerCaseServiceId: true
       routes:
-        - id: admin_category
+        - id: category_admin
           uri: lb://event-service
           predicates:
             - Path=/admin/categories/**
 
-        - id: public_category
+        - id: category_public
           uri: lb://event-service
           predicates:
             - Path=/categories/**
 
-        - id: admin_comment
+        - id: comment_admin
           uri: lb://event-service
           predicates:
             - Path=/admin/events/*/comments/**
 
-        - id: private_comment
+        - id: comment_private
           uri: lb://event-service
           predicates:
             - Path=/users/*/events/*/comments
 
-        - id: public_comment
+        - id: comment_public
           uri: lb://event-service
           predicates:
             - Path=/events/*/comments
 
-        - id: admin_compilation
+        - id: compilation_admin
           uri: lb://event-service
           predicates:
             - Path=/admin/compilations/**
 
-        - id: public_compilation
+        - id: compilation_public
           uri: lb://event-service
           predicates:
             - Path=/compilations/**
 
-        - id: admin_event
+        - id: event_admin
           uri: lb://event-service
           predicates:
             - Path=/admin/events/**
 
-        - id: private_event
+        - id: event_private
           uri: lb://event-service
           predicates:
             - Path=/users/*/events/**
 
-        - id: public_event
+        - id: event_api
+          uri: lb://event-service
+          predicates:
+            - Path=/api/events/**,/recommendations
+
+        - id: event_public
           uri: lb://event-service
           predicates:
             - Path=/events/**
 
-        - id: participation_request
+        - id: request_private
           uri: lb://request-service
           predicates:
-            - Path=/users/*/requests/**, /users/requests/**, /users/*/requests/*/**
+            - Path=/users/*/requests/**
 
-        - id: user
+        - id: request_api
+          uri: lb://request-service
+          predicates:
+            - Path=/api/requests,/api/users/*/events/*/requests
+
+        - id: user_admin
           uri: lb://user-service
           predicates:
             - Path=/admin/users/**
+
+        - id: user_api
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users,/api/users/*,/api/users/*/exists
 
 server:
   port: 8080
